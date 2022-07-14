@@ -11,9 +11,7 @@ import { handleValidationErrors, checkAuth } from "./utils/index.js";
 import { UserController, PostController } from "./controllers/index.js";
 
 mongoose
-  .connect(
-    "mongodb+srv://admin:1005@cluster0.gymb4o1.mongodb.net/blog?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGODB_URL)
   .then(() => console.log("DB is connected"))
   .catch((err) => console.log("DB error", err));
 
@@ -77,7 +75,7 @@ app.patch(
 );
 app.patch("/posts/:id/comments", PostController.addComment);
 
-app.listen(4444, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
   if (err) {
     return console.log(err);
   }
