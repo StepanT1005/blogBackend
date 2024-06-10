@@ -38,10 +38,8 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Post", PostSchema);
+PostSchema.statics.findMostViewed = function () {
+  return this.find().sort({ viewsCount: -1 }).limit(10);
+};
 
-// user: {
-//   type: mongoose.Schema.Types.ObjectId,
-//   ref: 'User', ////Звязок між таблицями (автором статті)
-//   required: true
-// },
+export default mongoose.model("Post", PostSchema);
