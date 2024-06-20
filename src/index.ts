@@ -19,7 +19,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*", // Allow all origins for development purposes
-    methods: ["GET", "POST"], // Allowed HTTP methods
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["my-custom-header"], // Custom headers
     credentials: true, // Allow cookies and other credentials
   },
