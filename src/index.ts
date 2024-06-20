@@ -64,9 +64,8 @@ io.on("connection", (socket) => {
     console.log(`User left room for post ${postId}`);
   });
 });
-
-const port = process.env.PORT || 4444;
-server.listen(port || 4444, () => {
+const port = process.env.PORT || 4000;
+server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
 
