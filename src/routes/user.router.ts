@@ -3,6 +3,7 @@ import { registerValidation, loginValidation } from "../validation";
 import handleValidationErrors from "../middleware/handleValidationErrors";
 import UserController from "../controllers/user.controller";
 import checkAuth from "../middleware/checkAuth";
+import { upload } from "../utils/file-upload";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.post(
 );
 router.post(
   "/register",
+  upload.single("avatar"),
   registerValidation,
   handleValidationErrors,
   UserController.register

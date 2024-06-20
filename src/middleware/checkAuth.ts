@@ -9,11 +9,7 @@ interface JwtPayload {
 interface CustomRequest extends Request {
   userId?: string;
 }
-const checkAuth = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-): any => {
+const checkAuth = (req: CustomRequest, res: Response, next: NextFunction) => {
   const token = (req.headers.authorization || "").replace(/Bearer\s?/, "");
 
   if (token) {
@@ -23,7 +19,7 @@ const checkAuth = (
         process.env.JWT_SECRET || "secretkey"
       ) as JwtPayload;
 
-      req.userId = decoded._id;
+      req.body.userId = decoded._id;
       next();
     } catch (e) {
       return res.status(403).json({

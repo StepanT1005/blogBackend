@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import userService from "../services/user.service";
+import { UserData } from "../types";
 
-interface CustomRequest extends Request {
-  userId?: string;
-}
 class UserController {
-  static async register(req: Request, res: Response): Promise<void> {
+  static async register(
+    req: Request<{}, {}, UserData>,
+    res: Response
+  ): Promise<void> {
     try {
-      const userData = await userService.register(req.body);
+      const avatarUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+      const userData = await userService.register({ ...req.body, avatarUrl });
       res.json(userData);
     } catch (err) {
       console.log(err);
@@ -17,12 +19,12 @@ class UserController {
     }
   }
 
-  static async login(req: Request, res: Response): Promise<void> {
+  static async login(
+    req: Request<{}, {}, UserData>,
+    res: Response
+  ): Promise<void> {
     try {
-      const userData = await userService.login(
-        req.body.email,
-        req.body.password
-      );
+      const userData = await userService.login(req.body);
       res.json(userData);
     } catch (err) {
       console.log(err);
@@ -32,15 +34,18 @@ class UserController {
     }
   }
 
-  static async getMe(req: CustomRequest, res: Response): Promise<void> {
-    if (!req.userId) {
+  static async getMe(
+    req: Request<{}, {}, { userId: string }>,
+    res: Response
+  ): Promise<void> {
+    if (!req.body.userId) {
       res.status(401).json({
         message: "Unauthorized access - no user id found",
       });
       return;
     }
     try {
-      const userData = await userService.getUserDetails(req.userId);
+      const userData = await userService.getUserDetails(req.body.userId);
       res.json(userData);
     } catch (err) {
       console.log(err);

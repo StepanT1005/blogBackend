@@ -1,47 +1,76 @@
-import PostModel from "../models/Post";
+import mongoose from "mongoose";
+import PostModel from "../models/post.model";
+import { PostData } from "../types";
 
 class PostRepository {
   async findWithLimit(limit: number) {
-    return PostModel.find().limit(limit).exec();
+    return PostModel.find({ deletedAt: null }).limit(limit).exec();
   }
 
-  async findAllPopulated() {
-    return PostModel.find().populate("user").exec();
+  async findAllWithPagination({
+    page,
+    limit,
+    sort,
+  }: {
+    page: number;
+    limit: number;
+    sort: any;
+  }) {
+    const skip = (page - 1) * limit;
+    return PostModel.find({ deletedAt: null })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "user",
+        select: "_id avatarUrl",
+      })
+      .exec();
   }
+
   async findById(id: string) {
-    return PostModel.findById(id).populate("user").exec();
+    return PostModel.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $inc: { viewsCount: 1 },
+      },
+      {
+        returnDocument: "after",
+      }
+    )
+      .populate({
+        path: "user",
+        select: "_id avatarUrl",
+      })
+      .exec();
   }
 
   async deleteById(id: string) {
-    return PostModel.findByIdAndDelete(id);
+    return PostModel.findByIdAndUpdate(id, { deletedAt: new Date() });
   }
 
-  async incrementViews(id: string) {
-    return PostModel.findByIdAndUpdate(
-      id,
-      { $inc: { viewsCount: 1 } },
-      { new: true }
-    );
-  }
-
-  async create(postData: any) {
-    const post = new PostModel(postData);
+  async create(postData: PostData) {
+    const { title, text, imageUrl, tags, userId: user } = postData;
+    const post = new PostModel({
+      title,
+      text,
+      imageUrl,
+      tags,
+      user,
+    });
     return post.save();
   }
 
-  async update(id: string, postData: any) {
+  async update(id: string, postData: PostData) {
     return PostModel.findByIdAndUpdate(id, postData, { new: true });
   }
 
-  async addComment(postId: string, comment: any) {
-    return PostModel.findByIdAndUpdate(
-      postId,
-      {
-        $push: { comments: comment },
-        $inc: { commentsCount: 1 },
-      },
-      { new: true }
-    );
+  async addCommentToPost(postId: string, commentId: mongoose.Types.ObjectId) {
+    await PostModel.findByIdAndUpdate(postId, {
+      $push: { comments: commentId },
+    });
   }
 }
 

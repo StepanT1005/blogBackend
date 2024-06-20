@@ -24,14 +24,26 @@ const PostSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    comments: {
-      type: Array,
-      default: [],
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    deletedAt: {
+      type: Date,
+      default: null,
     },
-    commentsCount: {
-      type: Number,
-      default: 0,
+    updatedAt: {
+      type: Date,
+      default: Date.now,
     },
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -39,7 +51,7 @@ const PostSchema = new mongoose.Schema(
 );
 
 PostSchema.statics.findMostViewed = function () {
-  return this.find().sort({ viewsCount: -1 }).limit(10);
+  return this.find({ deletedAt: null }).sort({ viewsCount: -1 }).limit(10);
 };
 
 export default mongoose.model("Post", PostSchema);

@@ -1,14 +1,4 @@
-import "express";
-
-// export interface LoginRequest {
-//   body: {
-//     email: string;
-//     password: string;
-//   };
-// }
-
-// export interface ApiResponse<T> {
-//   status: number;
-//   message: string;
-//   data?: T;
-// }
+export * from "./comment.types";
+export * from "./post.types";
+export * from "./user.types";
+export * from "./common.types";

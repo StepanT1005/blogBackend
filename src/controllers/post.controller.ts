@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import postService from "../services/post.service";
+import { PostData, QueryParams } from "../types";
 
 class PostController {
   static async getLastTags(req: Request, res: Response) {
@@ -12,21 +13,27 @@ class PostController {
     }
   }
 
-  static async getAllPosts(req: Request, res: Response) {
+  static async getAllPosts(
+    req: Request<{}, {}, {}, QueryParams>,
+    res: Response
+  ) {
     try {
-      const posts = await postService.getAllPosts();
+      const { page, limit, sort } = req.query;
+      const paginationOptions = { page, limit, sort };
+      const posts = await postService.getAllPosts(paginationOptions);
+      console.log(posts);
       res.json(posts);
     } catch (err) {
-      console.log(err);
       res.status(500).json({ message: "Failed to retrieve posts" });
     }
   }
 
-  static async getPostById(req: Request, res: Response): Promise<void> {
+  static async getPostById(req: Request, res: Response) {
     try {
-      const postId = req.params.id;
-      await postService.incrementPostViews(postId);
+      const { postId } = req.params;
       const post = await postService.getPostById(postId);
+      console.log(post);
+      // await postService.incrementPostViews(postId);
       if (!post) {
         res.status(404).json({ message: "Post not found" });
         return;
@@ -40,7 +47,8 @@ class PostController {
 
   static async deletePost(req: Request, res: Response): Promise<void> {
     try {
-      const result = await postService.deletePost(req.params.id);
+      const { postId } = req.params;
+      const result = await postService.deletePost(postId);
       if (!result) {
         res.status(404).json({ message: "Post not found" });
         return;
@@ -52,7 +60,10 @@ class PostController {
     }
   }
 
-  static async createPost(req: Request, res: Response): Promise<void> {
+  static async createPost(
+    req: Request<{}, {}, PostData>,
+    res: Response
+  ): Promise<void> {
     try {
       const post = await postService.createPost(req.body);
       res.status(201).json(post);
@@ -62,9 +73,14 @@ class PostController {
     }
   }
 
-  static async updatePost(req: Request, res: Response): Promise<void> {
+  static async updatePost(
+    req: Request<{ postId: string }, {}, PostData>,
+    res: Response
+  ): Promise<void> {
     try {
-      const updatedPost = await postService.updatePost(req.params.id, req.body);
+      const { postId } = req.params;
+
+      const updatedPost = await postService.updatePost(postId, req.body);
       if (!updatedPost) {
         res.status(404).json({ message: "Post not found" });
         return;
@@ -73,33 +89,6 @@ class PostController {
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Failed to update post" });
-    }
-  }
-
-  static async addComment(req: Request, res: Response): Promise<void> {
-    try {
-      const updatedPost = await postService.addCommentToPost(
-        req.params.id,
-        req.body
-      );
-      if (!updatedPost) {
-        res.status(404).json({ message: "Post not found" });
-        return;
-      }
-      res.json({ success: true, message: "Comment added successfully" });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Failed to add comment" });
-    }
-  }
-
-  static async getLastComments(req: Request, res: Response): Promise<void> {
-    try {
-      const comments = await postService.getRecentComments(5);
-      res.json(comments);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Failed to retrieve comments" });
     }
   }
 }

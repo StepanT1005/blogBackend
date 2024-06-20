@@ -1,19 +1,24 @@
 import userRepository from "../repositories/user.repository";
+import { Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { IUser, UserData } from "../types";
+
 dotenv.config();
 
 class UserService {
-  async register(userData: any) {
+  async register(userData: UserData) {
     const salt = await bcrypt.genSalt(10);
+    const { password, ...data } = userData;
     const passwordHash = await bcrypt.hash(userData.password, salt);
 
-    const user = await userRepository.create({ ...userData, passwordHash });
+    const user = await userRepository.create({ ...data, passwordHash });
     return this.generateToken(user);
   }
 
-  async login(email: string, password: string) {
+  async login(userData: UserData) {
+    const { email, password } = userData;
     const user = await userRepository.findByEmail(email);
     if (!user) {
       throw new Error("Incorrect login or password");
