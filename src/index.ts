@@ -31,6 +31,12 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(helmet());
 
+//// only for test, in production env need to change
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
+
 app.use("/uploads", express.static("uploads"));
 
 app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
