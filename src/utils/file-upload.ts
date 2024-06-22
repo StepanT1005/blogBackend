@@ -1,16 +1,26 @@
 import multer from "multer";
 import fs from "fs";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
+
+const uploadPath = "uploads";
+
+try {
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+} catch (err) {
+  console.error("Failed to create directory", err);
+}
 
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
-    const uploadPath = "uploads";
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath);
-    }
     cb(null, uploadPath);
   },
   filename: (_, file, cb) => {
-    cb(null, file.originalname);
+    const fileExt = path.extname(file.originalname);
+    const fileName = uuidv4() + fileExt;
+    cb(null, fileName);
   },
 });
 

@@ -9,11 +9,8 @@ export const validateFile = (
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Check the file type
-  const fileTypes = /jpeg|jpg|png|gif/;
-  const mimeType = fileTypes.test(req.file.mimetype);
-
-  if (!mimeType) {
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+  if (!allowedMimeTypes.includes(req.file.mimetype)) {
     return res.status(400).json({ message: "Only image files are allowed!" });
   }
 

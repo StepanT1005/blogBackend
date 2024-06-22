@@ -40,8 +40,10 @@ app.use((req, res, next) => {
 app.use("/uploads", express.static("uploads"));
 
 app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
+  console.log(req.file?.filename);
+  const url = `uploads/${req?.file?.filename}`;
   res.json({
-    url: `/uploads/${req?.file?.originalname}`,
+    url: `${url}`,
   });
 });
 
