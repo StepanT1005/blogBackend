@@ -1,9 +1,7 @@
-import { Request, Response } from "express";
-
 export interface PaginationAndSort {
   page: number;
   limit: number;
-  sort: "popular" | "newest" | "oldest";
+  sort: "popular" | "new";
 }
 
 export interface QueryParams extends PaginationAndSort {

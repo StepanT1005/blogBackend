@@ -6,12 +6,10 @@ class PostService {
     switch (sortKey) {
       case "popular":
         return { viewsCount: -1 };
-      case "newest":
+      case "new":
         return { createdAt: -1 };
-      case "oldest":
-        return { createdAt: 1 };
       default:
-        return {};
+        return { createdAt: -1 };
     }
   }
 

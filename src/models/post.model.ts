@@ -50,8 +50,8 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
-PostSchema.statics.findMostViewed = function () {
-  return this.find({ deletedAt: null }).sort({ viewsCount: -1 }).limit(10);
-};
+PostSchema.index({ createdAt: -1 });
+PostSchema.index({ viewsCount: -1 }); // For sorting by popularity
 
-export default mongoose.model("Post", PostSchema);
+const Post = mongoose.model("Post", PostSchema);
+export default Post;

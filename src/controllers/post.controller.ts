@@ -21,7 +21,7 @@ class PostController {
       const { page, limit, sort } = req.query;
       const paginationOptions = { page, limit, sort };
       const posts = await postService.getAllPosts(paginationOptions);
-      console.log(posts);
+
       res.json(posts);
     } catch (err) {
       res.status(500).json({ message: "Failed to retrieve posts" });
@@ -32,8 +32,6 @@ class PostController {
     try {
       const { postId } = req.params;
       const post = await postService.getPostById(postId);
-      console.log(post);
-      // await postService.incrementPostViews(postId);
       if (!post) {
         res.status(404).json({ message: "Post not found" });
         return;
