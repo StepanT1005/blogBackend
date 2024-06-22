@@ -23,7 +23,7 @@ class PostRepository {
       .limit(limit)
       .populate({
         path: "user",
-        select: "_id avatarUrl",
+        select: "_id avatarUrl username",
       })
       .exec();
   }
@@ -42,7 +42,7 @@ class PostRepository {
     )
       .populate({
         path: "user",
-        select: "_id avatarUrl",
+        select: "_id avatarUrl username",
       })
       .exec();
   }

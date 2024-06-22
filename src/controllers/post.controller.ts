@@ -19,8 +19,7 @@ class PostController {
   ) {
     try {
       const { page, limit, sort } = req.query;
-      const paginationOptions = { page, limit, sort };
-      const posts = await postService.getAllPosts(paginationOptions);
+      const posts = await postService.getAllPosts({ page, limit, sort });
 
       res.json(posts);
     } catch (err) {
@@ -46,14 +45,15 @@ class PostController {
   static async deletePost(req: Request, res: Response): Promise<void> {
     try {
       const { postId } = req.params;
-      const result = await postService.deletePost(postId);
+      const { userId } = req.body;
+      const result = await postService.deletePost(postId, userId);
+
       if (!result) {
         res.status(404).json({ message: "Post not found" });
         return;
       }
       res.json({ success: true, message: "Post deleted successfully" });
     } catch (err) {
-      console.log(err);
       res.status(500).json({ message: "Failed to delete post" });
     }
   }

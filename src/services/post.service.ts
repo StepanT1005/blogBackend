@@ -2,6 +2,19 @@ import postRepository from "../repositories/post.repository";
 import { IPost, PaginationAndSort, PostData } from "../types";
 
 class PostService {
+  private async validatePostPermission(postId: string, userId: string) {
+    const post = await postRepository.findById(postId);
+    if (post?.deletedAt) {
+      throw Error("The Post not found");
+    }
+    const postAuthorId = post?.user._id?.toString();
+    if (postAuthorId !== userId) {
+      throw Error("Forbidden: You do not have permission.");
+    }
+
+    return null;
+  }
+
   private getSortOption(sortKey: string): Record<string, number> {
     switch (sortKey) {
       case "popular":
@@ -37,13 +50,15 @@ class PostService {
   async getPostById(id: string) {
     const post = await postRepository.findById(id);
     if (post?.deletedAt) {
-      return { message: "The Post has been deleted " };
+      return { message: "The Post not found " };
     }
     return post;
   }
 
-  async deletePost(id: string) {
-    return await postRepository.deleteById(id);
+  async deletePost(postId: string, userId: string) {
+    await this.validatePostPermission(postId, userId);
+
+    return await postRepository.deleteById(postId);
   }
 
   async createPost(postData: PostData) {
@@ -51,6 +66,9 @@ class PostService {
   }
 
   async updatePost(id: string, postData: PostData) {
+    const { userId } = postData;
+    await this.validatePostPermission(id, userId);
+
     return await postRepository.update(id, postData);
   }
 }
