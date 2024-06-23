@@ -54,6 +54,7 @@ class PostController {
       }
       res.json({ success: true, message: "Post deleted successfully" });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Failed to delete post" });
     }
   }

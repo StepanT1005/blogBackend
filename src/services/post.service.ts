@@ -50,7 +50,7 @@ class PostService {
   async getPostById(id: string) {
     const post = await postRepository.findById(id);
     if (post?.deletedAt) {
-      return { message: "The Post not found " };
+      throw Error("The Post not found");
     }
     return post;
   }
