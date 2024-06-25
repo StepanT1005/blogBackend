@@ -53,29 +53,21 @@ app.post(
   }
 );
 
-app.use(routes);
+app.use("/api", routes);
 
 io.on("connection", (socket) => {
-  console.log("New client connected");
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
+  socket.on("disconnect", () => {});
 
   socket.on("joinPost", (postId) => {
     socket.join(postId);
-    console.log(`User joined room for post ${postId}`);
   });
 
   socket.on("newComment", (comment) => {
-    console.log(`New comment on post ${comment.post}`);
     io.to(comment.post).emit("commentAdded", comment);
-    console.log(`Emitted commentAdded for post ${comment.post}`);
   });
 
   socket.on("leavePost", (postId) => {
     socket.leave(postId);
-    console.log(`User left room for post ${postId}`);
   });
 });
 const port = process.env.PORT || 4000;
