@@ -10,6 +10,7 @@ import checkAuth from "./middleware/checkAuth";
 import morgan from "morgan";
 import compression from "compression";
 import helmet from "helmet";
+import { validateFile } from "./middleware/file-validation";
 dotenv.config();
 
 connectDatabase();
@@ -39,13 +40,18 @@ app.use((req, res, next) => {
 
 app.use("/uploads", express.static("uploads"));
 
-app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
-  console.log(req.file?.filename);
-  const url = `uploads/${req?.file?.filename}`;
-  res.json({
-    url: `${url}`,
-  });
-});
+app.post(
+  "/upload",
+  checkAuth,
+  upload.single("image"),
+  validateFile,
+  (req, res) => {
+    const url = `uploads/${req?.file?.filename}`;
+    res.json({
+      url: `${url}`,
+    });
+  }
+);
 
 app.use(routes);
 
