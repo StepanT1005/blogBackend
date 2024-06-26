@@ -39,10 +39,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/uploads", express.static(path.join(__dirname, "..", "uploads")));
+
+console.log("__dirname points to:", __dirname);
+console.log("Static files served from:", path.join(__dirname, "uploads"));
 
 app.post(
-  "/upload",
+  "/api/upload",
   checkAuth,
   upload.single("image"),
   validateFile,
