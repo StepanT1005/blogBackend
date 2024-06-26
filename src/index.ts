@@ -11,6 +11,7 @@ import morgan from "morgan";
 import compression from "compression";
 import helmet from "helmet";
 import { validateFile } from "./middleware/file-validation";
+import path from "path";
 dotenv.config();
 
 connectDatabase();
@@ -38,7 +39,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.post(
   "/upload",
@@ -70,7 +71,8 @@ io.on("connection", (socket) => {
     socket.leave(postId);
   });
 });
-const port = process.env.PORT || 4000;
+
+const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
